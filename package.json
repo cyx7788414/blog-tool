@@ -1,0 +1,33 @@
+{
+  "name": "blog-tool",
+  "version": "1.0.0",
+  "description": "help to write blog with markdown & generate data like index/classification",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyx7788414/blog-tool.git"
+  },
+  "keywords": [
+    "blog",
+    "markdown"
+  ],
+  "author": "kabiwo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cyx7788414/blog-tool/issues"
+  },
+  "homepage": "https://github.com/cyx7788414/blog-tool#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "@types/node": "^12.0.4",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.2.0",
+    "tslint": "^5.17.0",
+    "typescript": "^3.5.1"
+  }
+}
