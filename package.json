@@ -2,10 +2,11 @@
   "name": "blog-tool",
   "version": "1.0.0",
   "description": "help to write blog with markdown & generate data like index/classification",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "debug": "ts-node src/index.ts"
   },
   "repository": {
     "type": "git",
