@@ -2,6 +2,7 @@
   "name": "blog-tool",
   "version": "1.0.0",
   "description": "help to write blog with markdown & generate data like index/classification",
+  "bin": "bin/blog-tool.js",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

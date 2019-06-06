@@ -1,6 +1,6 @@
 import * as yargs  from 'yargs';
 
-import init from './init';
+import init from './command/init';
 
 const argv = yargs
     .usage('help to write blog with markdown & generate data like index/classification')
