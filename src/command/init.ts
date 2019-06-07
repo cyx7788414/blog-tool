@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as yargs from 'yargs';
 import * as path from 'path';
 import * as fs from 'fs';
 import common from '../common/common';
@@ -27,16 +27,15 @@ let mkStructure = (target: string): void => {
     common.fs.write({path: version, str: versionStr});
 };
 
-let init = (argv: any): void => {
+let init = (argv: yargs.Arguments<any>): void => {
     common.info.log('check path');
     let target = path.resolve(argv.path);
     fs.exists(target, exists => {
         if (exists) {
-            let files = fs.readdirSync(target);
-            if (files.includes('index.json') || files.includes('articles') || files.includes('version.json')) {
-                common.info.warn('this path seem to be initialized before, please check or remove the files that blog-tool created');
-            } else {
+            if (common.tool.initializableCheck(target)) {
                 mkStructure(target);
+            } else {
+                common.info.warn('this path seem to be initialized before, please check or remove the files that blog-tool created');
             }
         } else {
             common.info.log(`target path dose not exist`);

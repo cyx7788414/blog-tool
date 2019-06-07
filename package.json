@@ -24,8 +24,10 @@
   },
   "homepage": "https://github.com/cyx7788414/blog-tool#readme",
   "dependencies": {
+    "@types/inquirer": "^6.0.3",
     "@types/yargs": "^13.0.0",
     "chalk": "^2.4.2",
+    "inquirer": "^6.3.1",
     "yargs": "^13.2.4"
   },
   "devDependencies": {

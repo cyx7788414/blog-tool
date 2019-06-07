@@ -1,6 +1,7 @@
 import * as yargs  from 'yargs';
 
 import init from './command/init';
+import add from './command/add';
 
 const argv = yargs
     .usage('help to write blog with markdown & generate data like index/classification')
@@ -15,6 +16,12 @@ const argv = yargs
         }
     }, init)
     .command('add', 'add new article', {
+        path: {
+            alias: 'p',
+            description: 'initialized bath path',
+            default: './',
+            type: 'string'
+        },
         name: {
             alias: 'n',
             description: 'name for the new article',
@@ -26,7 +33,7 @@ const argv = yargs
             description: 'a date string which can be parsed by new Date(), to set this article as a past one',
             type: 'string'
         }
-    })
+    }, add)
     .command('update', 'to check & update index file', {
 
     })
@@ -35,5 +42,3 @@ const argv = yargs
     })
     .command('tag', '')
     .argv;
-
-console.log(argv);
