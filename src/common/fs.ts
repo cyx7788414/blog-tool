@@ -4,10 +4,10 @@ import infoOperation from './info';
 const _success = (type: string, params: {
     path: string,
     success?: Function
-}): void => {
+}, data?: Buffer): void => {
     infoOperation.success(`${type} ${params.path} success`);
     if (params.success) {
-        params.success();
+        params.success(data);
     }
 };
 
@@ -27,24 +27,25 @@ const _handleSync = (type: string, params: {
     success?: Function,
     error?: Function
 }, func: Function): void => {
+    let data;
     try {
-        func();
+        data = func();
     } catch(err) {
         _error(type, params, err);
         return;
     }
-    _success(type, params);
+    _success(type, params, data);
 };
 
 const _handleAsync = (type: string, params: {
     path: string,
     success?: Function,
-    error?: Function
-}, err: NodeJS.ErrnoException): void => {
+    error?: Function,
+}, err: NodeJS.ErrnoException, data?: Buffer): void => {
     if (err) {
         _error(type, params, err);
     } else {
-        _success(type, params);
+        _success(type, params, data);
     }
 };
 
@@ -85,9 +86,31 @@ const mkdir = (params: {
     }
 };
 
+const readFile = (params: {
+    path: string,
+    success?: Function,
+    error?: Function
+    sync?: boolean,
+    option?: {
+        encoding?: null;
+        flag?: string;
+    }
+}): void => {
+    if (params.sync) {
+        _handleSync('readFile', params, () => {
+            return fs.readFileSync(params.path, params.option);
+        });
+    } else {
+        fs.readFile(params.path, params.option, (err, data) => {
+            _handleAsync('readFile', params, err, data);
+        });
+    }
+};
+
 const fileOperation = {
     write: writeFile,
-    mkdir: mkdir
+    mkdir: mkdir,
+    read: readFile
 };
 
 export default fileOperation;
