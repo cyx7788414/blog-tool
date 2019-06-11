@@ -13,6 +13,13 @@ interface Answer {
     newTag?: string
 };
 
+interface CleanAnswer {
+    type: Type;
+    newType: Type;
+    tag: Tag[];
+    newTag: Tag[];
+}
+
 const initForm = async (indexObj: Index): Promise<Answer> => {
     let typeList: Type[] = indexObj.types;
     let tagList: Tag[] = indexObj.tags;
@@ -60,9 +67,9 @@ const initForm = async (indexObj: Index): Promise<Answer> => {
     return answer;
 };
 
-const checkAnswer = (indexObj: Index, answer: Answer): {type: Type, tag: Tag[]} => {
-    let obj = {};
+const checkAnswer = (indexObj: Index, answer: Answer): CleanAnswer => {
     let type: Type;
+    let newType: Type;
     if (answer.type > -1) {
         type = indexObj.types.find(v => v.id === answer.type);
     } else if (answer.type === -2) {
@@ -73,9 +80,11 @@ const checkAnswer = (indexObj: Index, answer: Answer): {type: Type, tag: Tag[]} 
                 id: last?last.id:-1 + 1,
                 name: answer.newType
             };
+            newType = type;
         }
     }
     let tag: Tag[] = [];
+    let newTag: Tag[] = [];
     if (answer.tag.length > 0) {
         let temp: Tag[] = [];
         if (answer.tag.includes(-2)) {
@@ -84,7 +93,12 @@ const checkAnswer = (indexObj: Index, answer: Answer): {type: Type, tag: Tag[]} 
             let last: number = lastElem?lastElem.id:-1;
             newTags.forEach(v => {
                 let tag = indexObj.tags.find(e => e.name === v);
-                temp.push(tag || {name: v, id: ++last});
+                let obj: Tag;
+                if (!tag) {
+                    obj = {name: v, id: ++last};
+                    newTag.push(obj);
+                }
+                temp.push(tag || obj);
             });
         }
         answer.tag.filter(v => v > -1).forEach(v => {
@@ -96,19 +110,54 @@ const checkAnswer = (indexObj: Index, answer: Answer): {type: Type, tag: Tag[]} 
     }
     return {
         type: type,
-        tag: tag
+        newType: newType,
+        tag: tag,
+        newTag: newTag
     };
 };
 
+const makeSure = async (argv: yargs.Arguments<any>, answer: CleanAnswer): Promise<{makesure: boolean}> => {
+    let message: string = `please confirm new article info:
+        name: ${argv.name}
+        type: ${answer.type?answer.type.name: null}
+        tag: ${answer.tag.length > 0?answer.tag.map(v => v.name).join('; '): null}
+    `;
+    return common.inquirer.make([
+        {
+            type: 'confirm',
+            name: 'makesure',
+            message: message
+        }
+    ]);
+};
+
+const handleConfig = (argv: yargs.Arguments<any>, indexObj: Index, answer: CleanAnswer): void => {
+    if (answer.newType) {
+        indexObj.types.push(answer.newType);
+    }
+    if (answer.newTag.length > 0) {
+        indexObj.tags = indexObj.tags.concat(answer.newTag);
+    }
+
+};
+
 const add = (argv: yargs.Arguments<any>): void => {
+    if (argv.date && isNaN(new Date(argv.date).getTime())) {
+        common.info.warn('Invalid Date');
+        return;
+    }
     if (common.tool.initializedCheck(argv.path)) {
         common.fs.read({
             path: path.join(argv.path, 'index.json'),
             sync: true,
             success: async (data: Buffer): Promise<void> => {
                 let indexObj = JSON.parse(data.toString());
-                let answer = await initForm(indexObj);
-                let cleanAnswer = checkAnswer(indexObj, answer);
+                let formAnswer = await initForm(indexObj);
+                let cleanAnswer: CleanAnswer = checkAnswer(indexObj, formAnswer);
+                let confirmAnswer = await makeSure(argv, cleanAnswer);
+                if (confirmAnswer.makesure) {
+                    handleConfig(argv, indexObj, cleanAnswer);
+                }
             }
         })
     } else {
