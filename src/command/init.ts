@@ -20,11 +20,11 @@ let mkStructure = (target: string): void => {
     });
     common.fs.write({path: index, str: indexStr});
     
-    let version = path.join(target, 'version.json');
-    let versionStr = JSON.stringify({
-        version: new Date().getTime()
-    });
-    common.fs.write({path: version, str: versionStr});
+    // let version = path.join(target, 'version.json');
+    // let versionStr = JSON.stringify({
+    //     version: new Date().getTime()
+    // });
+    // common.fs.write({path: version, str: versionStr});
 };
 
 let init = (argv: yargs.Arguments<any>): void => {

@@ -32,6 +32,11 @@ const argv = yargs
             alias: 'd',
             description: 'a date string which can be parsed by new Date(), to set this article as a past one',
             type: 'string'
+        },
+        auther: {
+            alias: 'a',
+            description: 'auther of this article',
+            type: 'string'
         }
     }, add)
     .command('update', 'to check & update index file', {

@@ -5,6 +5,7 @@ import common from "../common/common";
 import Index from '../class/index';
 import Type from 'src/class/type';
 import Tag from 'src/class/tag';
+import Article from 'src/class/article';
 
 interface Answer {
     type: number;
@@ -138,11 +139,50 @@ const handleConfig = (argv: yargs.Arguments<any>, indexObj: Index, answer: Clean
     if (answer.newTag.length > 0) {
         indexObj.tags = indexObj.tags.concat(answer.newTag);
     }
-
+    let date: Date = new Date();
+    if (argv.date) {
+        date = new Date(argv.date);
+    }
+    let id = (indexObj.articles.length - 1 > -1?indexObj.articles[indexObj.articles.length - 1].id:-1) + 1;
+    let relativePath = `./articles/${date.getFullYear()}/${date.getMonth() + 1}/${id}`;
+    let absolutePath = path.join(argv.path, relativePath);
+    
+    common.fs.mkdir({
+        path: absolutePath,
+        option: {
+            recursive: true
+        },
+        success: () => {
+            common.fs.write({
+                path: path.join(absolutePath, 'article.md'),
+                str: '',
+                success: () => {
+                    let article: Article = {
+                        id: id,
+                        name: argv.name,
+                        type: answer.type?answer.type.id:null,
+                        tag: answer.tag.map(v => v.id),
+                        path: relativePath,
+                        auther: argv.auther?argv.auther:'',
+                        create: date.getTime(),
+                        update: new Date().getTime()
+                    };
+                    indexObj.articles.push(article);
+                    common.fs.write({
+                        path: path.join(argv.path, 'index.json'),
+                        str: JSON.stringify(indexObj),
+                        success: () => {
+                            common.info.success(`done!\nthe article ${argv.name} has be added under path ${absolutePath}\nyou can edit article.md and add images under the path above`);
+                        }
+                    });
+                }
+            });
+        }
+    });
 };
 
 const add = (argv: yargs.Arguments<any>): void => {
-    if (argv.date && isNaN(new Date(argv.date).getTime())) {
+    if (argv.date && (Number.isNaN(new Date(argv.date).getTime()) || (new Date(argv.date).getTime() > new Date().getTime()))) {
         common.info.warn('Invalid Date');
         return;
     }
@@ -159,7 +199,7 @@ const add = (argv: yargs.Arguments<any>): void => {
                     handleConfig(argv, indexObj, cleanAnswer);
                 }
             }
-        })
+        });
     } else {
         common.info.warn(`path ${argv.path} has not be initialized, use command init to initialise it first`);
     }
