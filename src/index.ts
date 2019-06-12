@@ -2,6 +2,7 @@ import * as yargs  from 'yargs';
 
 import init from './command/init';
 import add from './command/add';
+import update from './command/update';
 
 const argv = yargs
     .usage('help to write blog with markdown & generate data like index/classification')
@@ -39,9 +40,24 @@ const argv = yargs
             type: 'string'
         }
     }, add)
-    .command('update', 'to check & update index file', {
-
-    })
+    .command('update', 'to update a article & index.json', {
+        path: {
+            alias: 'p',
+            description: 'a article path (which have a article.md)',
+            default: './',
+            type: 'string'
+        },
+        name: {
+            alias: 'n',
+            description: 'change the name of this article',
+            type: 'string'
+        },
+        auther: {
+            alias: 'a',
+            description: 'change the auther of this article',
+            type: 'string'
+        }
+    }, update)
     .command('delete', 'delete selected article', {
         
     })
