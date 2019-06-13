@@ -62,4 +62,5 @@ const argv = yargs
         
     })
     .command('tag', '')
+    .command('search', '')
     .argv;
