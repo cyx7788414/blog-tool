@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const info_1 = require("./info");
-const _success = (type, params) => {
+const _success = (type, params, data) => {
     info_1.default.success(`${type} ${params.path} success`);
     if (params.success) {
-        params.success();
+        params.success(data);
     }
 };
 const _error = (type, params, err) => {
@@ -16,21 +16,22 @@ const _error = (type, params, err) => {
     }
 };
 const _handleSync = (type, params, func) => {
+    let data;
     try {
-        func();
+        data = func();
     }
     catch (err) {
         _error(type, params, err);
         return;
     }
-    _success(type, params);
+    _success(type, params, data);
 };
-const _handleAsync = (type, params, err) => {
+const _handleAsync = (type, params, err, data) => {
     if (err) {
         _error(type, params, err);
     }
     else {
-        _success(type, params);
+        _success(type, params, data);
     }
 };
 const writeFile = (params) => {
@@ -57,8 +58,47 @@ const mkdir = (params) => {
         });
     }
 };
+const readFile = (params) => {
+    if (params.sync) {
+        _handleSync('readFile', params, () => {
+            return fs.readFileSync(params.path, params.option);
+        });
+    }
+    else {
+        fs.readFile(params.path, params.option, (err, data) => {
+            _handleAsync('readFile', params, err, data);
+        });
+    }
+};
+const getStat = (params) => {
+    if (params.sync) {
+        _handleSync('getStat', params, () => {
+            return fs.statSync(params.path);
+        });
+    }
+    else {
+        fs.stat(params.path, (err, data) => {
+            _handleAsync('getStat', params, err, data);
+        });
+    }
+};
+const readDir = (params) => {
+    if (params.sync) {
+        _handleSync('readDir', params, () => {
+            return fs.readdirSync(params.path);
+        });
+    }
+    else {
+        fs.readdir(params.path, (err, data) => {
+            _handleAsync('readDir', params, err, data);
+        });
+    }
+};
 const fileOperation = {
     write: writeFile,
-    mkdir: mkdir
+    mkdir: mkdir,
+    read: readFile,
+    stat: getStat,
+    readdir: readDir
 };
 exports.default = fileOperation;
