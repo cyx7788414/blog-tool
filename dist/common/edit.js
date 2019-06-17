@@ -13,21 +13,22 @@ const initForm = (indexObj, target) => __awaiter(this, void 0, void 0, function*
     let typeList = indexObj.types;
     let tagList = indexObj.tags;
     let answer = yield common_1.default.inquirer.make([
-        {
+        Object.assign({
             type: 'list',
             name: 'type',
             message: 'choice a type',
             choices: typeList.map(v => {
-                return {
+                let obj = {
                     name: v.name,
                     value: v.id,
                     checked: target && target.type === v.id ? true : false
                 };
+                return obj;
             }).concat([
                 { name: 'i will update it later', value: -1, checked: false },
                 { name: 'add new one', value: -2, checked: false }
             ])
-        },
+        }, target ? { default: target.type } : {}),
         {
             type: 'input',
             name: 'newType',
@@ -68,7 +69,7 @@ const checkAnswer = (indexObj, answer) => {
         if (!type) {
             let last = indexObj.types[indexObj.types.length - 1];
             type = {
-                id: last ? last.id : -1 + 1,
+                id: (last ? last.id : -1) + 1,
                 name: answer.newType
             };
             newType = type;
