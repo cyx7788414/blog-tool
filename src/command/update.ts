@@ -38,29 +38,14 @@ const handleConfig = (argv: yargs.Arguments<any>, indexObj: Index, answer: Clean
 };
 
 const update = (argv: yargs.Arguments<any>): void => {
-    let absolutePath: string = path.resolve(argv.path);
-    let pathParam: path.ParsedPath = path.parse(absolutePath);
-    let indexPath: string = path.join(absolutePath, '../../../../index.json');
-    if (common.tool.updatableCheck(absolutePath) && /\d+/.test(pathParam.base)) {
-        let id = parseInt(pathParam.base);
-        common.fs.read({
-            path: indexPath,
-            success: async (data: Buffer): Promise<void>  => {
-                let indexObj: Index = JSON.parse(data.toString());
-                let target: Article = indexObj.articles.find((v, i) => {
-                    return v.id === id;
-                });
-                let formAnswer = await common.edit.initForm(indexObj, target);
-                let cleanAnswer: CleanAnswer = common.edit.checkAnswer(indexObj, formAnswer);
-                let confirmAnswer = await common.edit.makeSure(argv, cleanAnswer, target);
-                if (confirmAnswer.makesure) {
-                    handleConfig(argv, indexObj, cleanAnswer, target, indexPath);
-                }
-            }
-        });
-    } else {
-        common.info.warn(`path ${absolutePath} is not a article item path`);
-    }
+    common.edit.editArticleItemPrepare(argv, async (params: any): Promise<void> => {
+        let formAnswer = await common.edit.initForm(params.indexObj, params.target);
+        let cleanAnswer: CleanAnswer = common.edit.checkAnswer(params.indexObj, formAnswer);
+        let confirmAnswer = await common.edit.makeSure(argv, cleanAnswer, params.target);
+        if (confirmAnswer.makesure) {
+            handleConfig(argv, params.indexObj, cleanAnswer, params.target, params.indexPath);
+        }
+    });
 };
 
 export default update;

@@ -1,11 +1,12 @@
 import * as yargs from 'yargs';
-import common from "./common";
+import * as path from 'path';
+import common from './common';
 import Index from '../class/index';
 import Type from '../class/type';
 import Tag from '../class/tag';
 import Answer from '../class/answer';
 import CleanAnswer from '../class/cleananswer';
-import Article from "../class/article";
+import Article from '../class/article';
 
 const initForm = async (indexObj: Index, target?: Article): Promise<Answer> => {
     let typeList: Type[] = indexObj.types;
@@ -122,10 +123,46 @@ const makeSure = async (argv: yargs.Arguments<any>, answer: CleanAnswer, target?
     ]);
 };
 
+const editArticleItemPrepare = (argv: yargs.Arguments<any>, callback: Function): void => {
+    let absolutePath: string = path.resolve(argv.path);
+    let pathParam: path.ParsedPath = path.parse(absolutePath);
+    let indexPath: string = path.join(absolutePath, '../../../../index.json');
+    if (common.tool.updatableCheck(absolutePath) && /\d+/.test(pathParam.base)) {
+        let id = parseInt(pathParam.base);
+        common.fs.read({
+            path: indexPath,
+            success: async (data: Buffer): Promise<void>  => {
+                let indexObj: Index = JSON.parse(data.toString());
+                let target: Article = indexObj.articles.find((v, i) => {
+                    return v.id === id;
+                });
+                if (!target) {
+                    common.info.warn(`id ${id} dose not exist in index.json`);
+                    return;
+                }
+                try {
+                    callback({
+                        indexObj: indexObj,
+                        target: target,
+                        indexPath: indexPath,
+                        absolutePath: absolutePath,
+                        pathParam: pathParam
+                    });
+                } catch(e) {
+                    console.log(e);
+                }
+            }
+        });
+    } else {
+        common.info.warn(`path ${absolutePath} is not a article item path`);
+    }
+};
+
 const editOperation = {
     initForm: initForm,
     checkAnswer: checkAnswer,
-    makeSure: makeSure
+    makeSure: makeSure,
+    editArticleItemPrepare: editArticleItemPrepare
 };
 
 export default editOperation;

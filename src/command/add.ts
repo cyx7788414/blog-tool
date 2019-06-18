@@ -38,7 +38,8 @@ const handleConfig = (argv: yargs.Arguments<any>, indexObj: Index, answer: Clean
                         path: relativePath,
                         auther: argv.auther?argv.auther:'',
                         create: date.getTime(),
-                        update: new Date().getTime()
+                        update: new Date().getTime(),
+                        delete: false
                     };
                     indexObj.articles.push(article);
                     common.fs.write({

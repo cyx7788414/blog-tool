@@ -3,6 +3,7 @@ import * as yargs  from 'yargs';
 import init from './command/init';
 import add from './command/add';
 import update from './command/update';
+import del from './command/del';
 
 const argv = yargs
     .usage('help to write blog with markdown & generate data like index/classification')
@@ -59,8 +60,19 @@ const argv = yargs
         }
     }, update)
     .command('delete', 'delete selected article', {
-        
-    })
+        path: {
+            alias: 'p',
+            description: 'a article path (which have a article.md)',
+            default: './',
+            type: 'string'
+        },
+        force: {
+            alias: 'f',
+            description: 'set delete to true but do not delete it as default, delete article and index for true',
+            default: false,
+            type: 'boolean'
+        }
+    }, del)
     .command('tag', '')
     .command('search', '')
     .argv;
