@@ -29,7 +29,7 @@ const handleConfig = (argv: yargs.Arguments<any>, indexObj: Index, answer: Clean
             path: indexPath,
             str: JSON.stringify(indexObj),
             success: () => {
-                common.info.success(`done!\nthe article ${argv.name} has be update to index.json`);
+                common.info.success(`done!\nthe article ${target.name} has be update to index.json`);
             }
         })
     } else {

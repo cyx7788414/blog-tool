@@ -1,19 +1,24 @@
 import * as yargs from 'yargs';
 import * as path from 'path';
 import common from '../common/common';
+import Article from '../class/article';
 
 const del = (argv: yargs.Arguments<any>): void => {
     common.edit.editArticleItemPrepare(argv, (param: any): void => {
         console.log(param);
         let id = param.target.id;
-        let index = param.indexObj.articles.findIndex(v => v.id === id);
+        let index = param.indexObj.articles.findIndex((v: Article) => v.id === id);
         if (argv.force) {
 
         } else {
             param.indexObj.articles[index].delete === true;
         }
         common.fs.write({
-            path: param
+            path: param.target,
+            str: JSON.stringify(param.indexObj),
+            success: () => {
+                common.info.success(`done!\nthe article ${param.indexObj.articles[index].name} has be ${argv.force?'force deleted':'set as delete'}`);
+            }
         })
     });
 };
