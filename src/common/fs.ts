@@ -139,14 +139,60 @@ const readDir = (params: {
             _handleAsync('readDir', params, err, data);
         });
     }
+};
+
+const rmDir = (params: {
+    path: string,
+    success?: Function,
+    error?: Function,
+    sync?: boolean
+}): void => {
+    if (params.sync) {
+        _handleSync('rmDir', params, () => {
+            return fs.rmdirSync(params.path);
+        });
+    } else {
+        fs.rmdir(params.path, err => {
+            _handleAsync('rmDir', params, err);
+        });
+    }
 }
+
+const rmDirRecur = (params: {
+    path: string,
+    success?: Function,
+    error?: Function,
+    sync?: boolean
+}): void => {
+    
+}
+
+const rmFile = (params: {
+    path: string,
+    success?: Function,
+    error?: Function,
+    sync?: boolean
+}): void => {
+    if (params.sync) {
+        _handleSync('rmFile', params, () => {
+            return fs.unlinkSync(params.path);
+        });
+    } else {
+        fs.unlink(params.path, err => {
+            _handleAsync('rmFile', params, err);
+        });
+    }
+};
 
 const fileOperation = {
     write: writeFile,
     mkdir: mkdir,
     read: readFile,
     stat: getStat,
-    readdir: readDir
+    readdir: readDir,
+    rmFile: rmFile,
+    rmDir: rmDir,
+    rmDirRecur: rmDirRecur
 };
 
 export default fileOperation;
