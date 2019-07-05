@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as rm from 'rimraf';
 import infoOperation from './info';
 
 const _success = (type: string, params: {
@@ -164,7 +165,15 @@ const rmDirRecur = (params: {
     error?: Function,
     sync?: boolean
 }): void => {
-    
+    if (params.sync) {
+        _handleSync('rmDirRecur', params, () => {
+            return rm.sync(params.path, {});
+        });
+    } else {
+        rm(params.path, {}, err => {
+            _handleAsync('rmDirRecur', params, err);
+        });
+    }
 }
 
 const rmFile = (params: {
