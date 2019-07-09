@@ -3,6 +3,11 @@ import * as fs from 'fs';
 import fsOperation from './fs';
 import infoOperation from './info';
 
+
+const checkInvalidDate = (date: string): boolean => {
+    return date && Number.isNaN(new Date(date).getTime());
+};
+
 const isDirectory = (path: string): boolean => {
     let stat: fs.Stats;
     fsOperation.stat({
@@ -87,6 +92,7 @@ const updatableCheck = (path: string): boolean => {
 };
 
 const toolOperation = {
+    checkInvalidDate: checkInvalidDate,
     isDirectory: isDirectory,
     isFile: isFile,
     initializableCheck: initializableCheck,
