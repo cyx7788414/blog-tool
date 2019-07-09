@@ -12,13 +12,18 @@ const del = (argv: yargs.Arguments<any>): void => {
         absolutePath: string,
         pathParam: path.ParsedPath
     }): void => {
-        console.log(param);
         let id = param.target.id;
         let index = param.indexObj.articles.findIndex((v: Article) => v.id === id);
         if (argv.force) {
-            param.indexObj.articles.splice(index, 1);
+            common.fs.rmDirRecur({
+                path: param.absolutePath,
+                sync: true,
+                success: () => {
+                    param.indexObj.articles.splice(index, 1);
+                }
+            });
         } else {
-            param.indexObj.articles[index].delete === true;
+            param.indexObj.articles[index].delete = true;
         }
         common.fs.write({
             path: param.indexPath,
