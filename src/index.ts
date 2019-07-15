@@ -74,22 +74,28 @@ const argv = yargs
             type: 'boolean'
         }
     }, del)
-    .command('attr', 'show list/rename/delete attribute like type or tag', {
+    .command('attr', 'show list/rename/delete attribute like type or tag, the first independent option will be run with other ignore', {
+        path: {
+            alias: 'p',
+            description: 'a base path (which have a index.json)',
+            default: './',
+            type: 'string'
+        },
         list: {
             alias: 'l',
-            description: 'show the list of target',
+            description: 'show the list of target, independent',
             default: false,
             type: 'boolean'
         },
         rename: {
             alias: 'r',
-            description: 'select item and then rename it',
+            description: 'select item and then rename it, independent',
             default: false,
             type: 'boolean'
         },
         delete: {
             alias: 'd',
-            description: 'choice some item and delete them',
+            description: 'choice some item and delete them, independent',
             default: false,
             type: 'boolean'
         }
