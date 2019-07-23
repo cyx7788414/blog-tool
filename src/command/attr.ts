@@ -34,7 +34,7 @@ const enquire = async (argv: yargs.Arguments<any>, indexObj: Index): Promise<voi
         return;
     }
     if (argv.rename) {
-        let renameTarget = await common.inquirer.make([
+        let renameAnswer = await common.inquirer.make([
             {
                 type: 'list',
                 name: 'target',
@@ -42,8 +42,39 @@ const enquire = async (argv: yargs.Arguments<any>, indexObj: Index): Promise<voi
                 choices: result.map(v => {
                     return {name: v.name, value: v}
                 })
+            },
+            {
+                type: 'input',
+                name: 'name',
+                message: 'please input the new name',
+                validate: val => {
+                    if (val && val.indexOf(' ') === -1) {
+                        return true;
+                    }
+                    return 'no space & not empty';
+                }
+            },
+            {
+                type: 'confirm',
+                name: 'makesure',
+                message: answer => {
+                    return `you will change ${answer.target.name} to ${answer.name}, are u suer?`;
+                }
             }
         ]);
+        if (renameAnswer.makesure) {
+            for (let [key, value] of Object.entries(indexObj)) {
+                if (target === key) {
+                    value = value.map((v: any) => {
+                        if (v.id === renameAnswer.target.id) {
+                            v.name = renameAnswer.name;
+                        }
+                        return v;
+                    });
+                }
+            }
+            console.log(indexObj);
+        }
     }
 };
 
