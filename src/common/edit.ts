@@ -20,14 +20,14 @@ const initForm = async (indexObj: Index, target?: Article): Promise<Answer> => {
                 let obj = {
                     name: v.name,
                     value: v.id,
-                    checked: target && target.type === v.id?true:false
+                    checked: (target && target.type === v.id)?true:false
                 };
                 return obj;
             }).concat([
                 {name: 'i will update it later', value: -1, checked: false},
-                {name: 'add new one', value: -2, checked: false}
+                {name: 'add new one', value: -2, checked: (target && target.type === null)?true:false}
             ])
-        }, target?{default: target.type}:{}),
+        }, target?{default: target.type || -2}:{}),
         {
             type: 'input',
             name: 'newType',
