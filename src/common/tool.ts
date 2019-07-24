@@ -2,7 +2,26 @@ import * as path from 'path';
 import * as fs from 'fs';
 import fsOperation from './fs';
 import infoOperation from './info';
+import Index from '../class/index';
+import common from '../common/common';
 
+const attrMap: {
+    name: any,
+    value: any,
+    get: Function
+} = {
+    name: {
+        'type': 'types',
+        'tag': 'tags'
+    },
+    value: {
+        'types': 'type',
+        'tags': 'tag'
+    },
+    get: (str: string) => {
+        return attrMap.name[str] || attrMap.value[str] || '';
+    }
+};
 
 const checkInvalidDate = (date: string): boolean => {
     return date && Number.isNaN(new Date(date).getTime());
@@ -91,13 +110,40 @@ const updatableCheck = (path: string): boolean => {
     return false;
 };
 
+const writeIndexFile = (indexPath: string, indexObj: Index, success?: Function, error?: Function) => {
+    common.fs.write({
+        path: indexPath,
+        str: JSON.stringify(indexObj),
+        success: () => {
+            if (success) {
+                try {
+                    success();
+                } catch(e) {
+                    console.log(e);
+                }
+            }
+        },
+        error: (err: any) => {
+            if (err) {
+                try {
+                    error(err);
+                } catch(e) {
+                    console.log(e);
+                }
+            }
+        }
+    });
+};
+
 const toolOperation = {
+    attrMap: attrMap,
     checkInvalidDate: checkInvalidDate,
     isDirectory: isDirectory,
     isFile: isFile,
     initializableCheck: initializableCheck,
     initializedCheck: initializedCheck,
-    updatableCheck: updatableCheck
+    updatableCheck: updatableCheck,
+    writeIndex: writeIndexFile
 };
 
 export default toolOperation;

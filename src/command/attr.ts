@@ -3,31 +3,22 @@ import common from '../common/common';
 import * as path from 'path';
 import Index from '../class/index';
 
-const enquire = async (argv: yargs.Arguments<any>, indexObj: Index): Promise<void> => {
+const enquire = async (argv: yargs.Arguments<any>, indexObj: Index, indexPath: string): Promise<void> => {
     let answer = await common.inquirer.make([
         {
             type: 'list',
             name: 'target',
             message: 'please choice the target',
-            choices: [
-                {
-                    name: 'type',
-                    value: 'types'
-                },
-                {
-                    name: 'tag',
-                    value: 'tags'
-                }
-            ]
+            choices: Object.entries(common.tool.attrMap.name).map(v => {
+                return {
+                    name: v[0],
+                    value: v[1]
+                };
+            })
         }
     ]);
     let target: string = answer.target;
-    let result: any[] = [];
-    for (let [key, value] of Object.entries(indexObj)) {
-        if (target === key) {
-            result = value;
-        }
-    }
+    let result: any[] = (indexObj as any)[target];
     if (argv.list) {
         common.info.log(`selected result:`);
         common.info.log(result.map((v:any) => v.name).join('\n'));
@@ -48,7 +39,7 @@ const enquire = async (argv: yargs.Arguments<any>, indexObj: Index): Promise<voi
                 name: 'name',
                 message: 'please input the new name',
                 validate: val => {
-                    if (val && val.indexOf(' ') === -1) {
+                    if (val) {
                         return true;
                     }
                     return 'no space & not empty';
@@ -58,33 +49,69 @@ const enquire = async (argv: yargs.Arguments<any>, indexObj: Index): Promise<voi
                 type: 'confirm',
                 name: 'makesure',
                 message: answer => {
-                    return `you will change ${answer.target.name} to ${answer.name}, are u suer?`;
+                    return `you will change ${answer.target.name} to ${answer.name}, are u sure?`;
                 }
             }
         ]);
         if (renameAnswer.makesure) {
-            for (let [key, value] of Object.entries(indexObj)) {
-                if (target === key) {
-                    value = value.map((v: any) => {
-                        if (v.id === renameAnswer.target.id) {
-                            v.name = renameAnswer.name;
-                        }
-                        return v;
-                    });
+            (indexObj as any)[target] = result.map(v => {
+                if (v.id === renameAnswer.target.id) {
+                    v.name = renameAnswer.name;
                 }
-            }
-            console.log(indexObj);
+                return v;
+            });
+        } else {
+            return;
         }
     }
+    if (argv.delete) {
+        let deleteAnswer = await common.inquirer.make([
+            {
+                type: 'checkbox',
+                name: 'target',
+                message: 'please choice delete targets',
+                choices: result.map(v => {
+                    return {name: v.name, value: v}
+                })
+            },
+            {
+                type: 'confirm',
+                name: 'makesure',
+                message: answer => {
+                    return `you will delete targets below, are u sure?\n${answer.target.map((v: any) => v.name).join('\n')}`;
+                }
+            }
+        ]);
+        if (deleteAnswer.makesure) {
+            let idList = deleteAnswer.target.map((v: any) => v.id);
+            (indexObj as any)[target] = result.filter(v => !idList.includes(v.id));
+            let index = common.tool.attrMap.get(target);
+            indexObj.articles.map((v: any) => {
+                if (v[index] && v[index].length >= 0) {
+                    v[index] = v[index].filter((r: number) => !idList.includes(r));
+                } else {
+                    if (idList.includes(v[index])) {
+                        v[index] = null;
+                    }
+                }
+            });
+        } else {
+            return;
+        }
+    }
+    common.tool.writeIndex(indexPath, indexObj, () => {
+        common.info.success('done');
+    });
 };
 
 const attr = (argv: yargs.Arguments<any>): void => {
     let absolutePath: string = path.resolve(argv.path);
+    let indexPath: string = path.join(absolutePath, 'index.json');
     common.fs.read({
-        path: path.join(absolutePath, 'index.json'),
+        path: indexPath,
         success: (data: Buffer): void  => {
             let indexObj: Index = JSON.parse(data.toString());
-            enquire(argv, indexObj);
+            enquire(argv, indexObj, indexPath);
         },
         error: () => {
             common.info.error('Invalid path');
