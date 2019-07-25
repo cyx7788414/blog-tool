@@ -11,23 +11,24 @@ import Article from '../class/article';
 const initForm = async (indexObj: Index, target?: Article): Promise<Answer> => {
     let typeList: Type[] = indexObj.types;
     let tagList: Tag[] = indexObj.tags;
+    let typeChoices = typeList.map(v => {
+        let obj = {
+            name: v.name,
+            value: v.id,
+            checked: (target && target.type === v.id)?true:false
+        };
+        return obj;
+    }).concat([
+        {name: 'i will update it later', value: -1, checked: (target && target.type === null)?true:false},
+        {name: 'add new one', value: -2, checked: false}
+    ]);
     let answer: Promise<Answer> = await common.inquirer.make([
         Object.assign({
             type: 'list',
             name: 'type',
             message: 'choice a type',
-            choices: typeList.map(v => {
-                let obj = {
-                    name: v.name,
-                    value: v.id,
-                    checked: (target && target.type === v.id)?true:false
-                };
-                return obj;
-            }).concat([
-                {name: 'i will update it later', value: -1, checked: false},
-                {name: 'add new one', value: -2, checked: (target && target.type === null)?true:false}
-            ])
-        }, target?{default: target.type || -2}:{}),
+            choices: typeChoices
+        }, target?{default: typeChoices.findIndex(v => v.value === target.type) || typeChoices.length - 1}:{}),
         {
             type: 'input',
             name: 'newType',
