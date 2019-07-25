@@ -5,15 +5,25 @@ import Article from '../class/article';
 import Index from '../class/index';
 
 const del = (argv: yargs.Arguments<any>): void => {
-    common.edit.editArticleItemPrepare(argv, (param: {
+    common.edit.editArticleItemPrepare(argv, async (param: {
         indexObj: Index,
         target: Article,
         indexPath: string,
         absolutePath: string,
         pathParam: path.ParsedPath
-    }): void => {
+    }): Promise<void> => {
         let id = param.target.id;
         let index = param.indexObj.articles.findIndex((v: Article) => v.id === id);
+        let answer = await common.inquirer.make([
+            {
+                type: 'confirm',
+                name: 'makesure',
+                message: `the article ${param.target.name} will be ${argv.force?'force deleted':'set as delete'}, are you sure?`
+            }
+        ]);
+        if (!answer.makesure) {
+            return;
+        }
         if (argv.force) {
             common.fs.rmDirRecur({
                 path: param.absolutePath,
