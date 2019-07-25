@@ -33,7 +33,7 @@ const del = (argv: yargs.Arguments<any>): void => {
                 }
             });
         } else {
-            param.indexObj.articles[index].delete = true;
+            param.indexObj.articles[index].status = 'delete';
         }
         common.fs.write({
             path: param.indexPath,
