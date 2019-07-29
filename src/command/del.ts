@@ -33,13 +33,13 @@ const del = (argv: yargs.Arguments<any>): void => {
                 }
             });
         } else {
-            param.indexObj.articles[index].status = 'delete';
+            param.indexObj.articles[index].status = 2;
         }
         common.fs.write({
             path: param.indexPath,
             str: JSON.stringify(param.indexObj),
             success: () => {
-                common.info.success(`done!\nthe article ${param.indexObj.articles[index].name} has be ${argv.force?'force deleted':'set as delete'}`);
+                common.info.success(`done!\nthe article ${param.target.name} has be ${argv.force?'force deleted':'set as delete'}`);
             }
         });
     });

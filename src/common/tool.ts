@@ -36,7 +36,7 @@ const isDirectory = (path: string): boolean => {
             stat = data;
         }
     });
-    return stat.isDirectory();
+    return stat?stat.isDirectory():false;
 };
 
 const isFile = (path: string): boolean => {

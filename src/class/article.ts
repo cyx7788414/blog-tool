@@ -7,5 +7,5 @@ export default class Article {
     auther: string;
     create: number;
     update: number;
-    status: string;
+    status: number;
 };

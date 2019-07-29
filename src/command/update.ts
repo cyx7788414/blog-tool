@@ -24,6 +24,7 @@ const handleConfig = (argv: yargs.Arguments<any>, indexObj: Index, answer: Clean
         target.type = answer.type?answer.type.id:null;
         target.tag = answer.tag.map(v => v.id);
         target.update = new Date().getTime();
+        target.status = answer.status;
         indexObj.articles[index] = target;
         common.fs.write({
             path: indexPath,

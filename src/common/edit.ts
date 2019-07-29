@@ -54,6 +54,22 @@ const initForm = async (indexObj: Index, target?: Article): Promise<Answer> => {
             name: 'newTag',
             message: 'input some new tag (split it with \';\'))',
             when: current => (current.tag.includes(-2) && !current.newTag)
+        },
+        {
+            type: 'list',
+            name: 'status',
+            message: 'choice the status of this article',
+            when: current => target?true:false,
+            choices: common.data.statusList.map(v => {
+                return {
+                    name: v.name,
+                    value: v.id,
+                    checked: target && target.status === v.id
+                };
+            }),
+            default: () => {
+                return target?target.status:0;
+            }
         }
     ]); 
     return answer;
@@ -104,7 +120,8 @@ const checkAnswer = (indexObj: Index, answer: Answer): CleanAnswer => {
         type: type,
         newType: newType,
         tag: tag,
-        newTag: newTag
+        newTag: newTag,
+        status: answer.status || 0
     };
 };
 
@@ -113,7 +130,8 @@ const makeSure = async (argv: yargs.Arguments<any>, answer: CleanAnswer, target?
         name: ${argv.name || (target?target.name:'')}
         auther: ${argv.auther || (target?target.auther:'')}
         type: ${answer.type?answer.type.name: null}
-        tag: ${answer.tag.length > 0?answer.tag.map(v => v.name).join('; '): null}
+        tag: ${answer.tag.length > 0?answer.tag.map(v => v.name).join('; '): null},
+        status: ${common.data.statusList.find(v => v.id === (answer.status || 0)).name}
     `;
     return common.inquirer.make([
         {
