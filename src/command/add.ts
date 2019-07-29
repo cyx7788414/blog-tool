@@ -2,7 +2,7 @@ import * as yargs from 'yargs';
 import * as path from 'path';
 import common from "../common/common";
 import Index from '../class/index';
-import Article from 'src/class/article';
+import Article from '../class/article';
 import CleanAnswer from '../class/cleananswer';
 
 const handleConfig = (argv: yargs.Arguments<any>, indexObj: Index, answer: CleanAnswer): void => {

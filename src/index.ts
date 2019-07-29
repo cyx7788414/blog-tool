@@ -5,6 +5,7 @@ import add from './command/add';
 import update from './command/update';
 import del from './command/del';
 import attr from './command/attr';
+import search from './command/search';
 
 const argv = yargs
     .usage('help to write blog with markdown & generate data like index/classification')
@@ -101,6 +102,12 @@ const argv = yargs
         }
     }, attr)
     .command('search', 'search article width tag/type/name/auther/date', {
+        path: {
+            alias: 'p',
+            description: 'a base path (which have a index.json)',
+            default: './',
+            type: 'string'
+        },
         tag: {
             alias: 'ta',
             description: 'add substr of tag to search condition',
@@ -130,6 +137,11 @@ const argv = yargs
             alias: 'ld',
             description: 'a date string which can be parsed by new Date(), as the latest date of search condition',
             type: 'string'
+        },
+        status: {
+            alias: 's',
+            description: 'add substr of status to search condition',
+            type: 'string'
         }
-    })
+    }, search)
     .argv;
