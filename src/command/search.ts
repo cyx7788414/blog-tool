@@ -1,5 +1,6 @@
 import * as yargs from 'yargs';
 import * as path from 'path';
+import * as moment from 'moment';
 import common from '../common/common';
 import Index from '../class/index';
 import Article from '../class/article';
@@ -36,123 +37,94 @@ const conditionList = [
         }
     },
     {
-        type: 'tag',
+        type: 'name',
         getHandle: (indexObj: Index, substr: string): any => {
-            let tags = indexObj.tags.filter(v => v.name.indexOf(substr) > -1).map(v => v.id);
             return (v: Article): boolean => {
-                for (let item of v.tag) {
-                    if (tags.includes(item)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+                return v.name && v.name.indexOf(substr) > -1;
+            };
         }
     },
     {
-        type: 'tag',
+        type: 'auther',
         getHandle: (indexObj: Index, substr: string): any => {
-            let tags = indexObj.tags.filter(v => v.name.indexOf(substr) > -1).map(v => v.id);
             return (v: Article): boolean => {
-                for (let item of v.tag) {
-                    if (tags.includes(item)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+                return v.auther && v.auther.indexOf(substr) > -1;
+            };
         }
     },
     {
-        type: 'tag',
+        type: 'earliestcreate',
         getHandle: (indexObj: Index, substr: string): any => {
-            let tags = indexObj.tags.filter(v => v.name.indexOf(substr) > -1).map(v => v.id);
+            let date = new Date(substr).getTime();
+            console.log(date)
             return (v: Article): boolean => {
-                for (let item of v.tag) {
-                    if (tags.includes(item)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+                return date && v.create >= date;
+            };
         }
     },
     {
-        type: 'tag',
+        type: 'latestcreate',
         getHandle: (indexObj: Index, substr: string): any => {
-            let tags = indexObj.tags.filter(v => v.name.indexOf(substr) > -1).map(v => v.id);
+            let date = new Date(substr).getTime();
             return (v: Article): boolean => {
-                for (let item of v.tag) {
-                    if (tags.includes(item)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+                return date && v.create <= date;
+            };
         }
     },
     {
-        type: 'tag',
+        type: 'earliestupdate',
         getHandle: (indexObj: Index, substr: string): any => {
-            let tags = indexObj.tags.filter(v => v.name.indexOf(substr) > -1).map(v => v.id);
+            let date = new Date(substr).getTime();
             return (v: Article): boolean => {
-                for (let item of v.tag) {
-                    if (tags.includes(item)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+                return date && v.update >= date;
+            };
         }
     },
     {
-        type: 'tag',
+        type: 'latestupdate',
         getHandle: (indexObj: Index, substr: string): any => {
-            let tags = indexObj.tags.filter(v => v.name.indexOf(substr) > -1).map(v => v.id);
+            let date = new Date(substr).getTime();
             return (v: Article): boolean => {
-                for (let item of v.tag) {
-                    if (tags.includes(item)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+                return date && v.update <= date;
+            };
         }
     },
     {
-        type: 'tag',
+        type: 'status',
         getHandle: (indexObj: Index, substr: string): any => {
-            let tags = indexObj.tags.filter(v => v.name.indexOf(substr) > -1).map(v => v.id);
+            let status = common.data.statusList.filter(v => v.name.indexOf(substr) > -1).map(v => v.id);
             return (v: Article): boolean => {
-                for (let item of v.tag) {
-                    if (tags.includes(item)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+                return status.includes(v.status);
+            };
         }
-    },
-    {
-        type: 'tag',
-        getHandle: (indexObj: Index, substr: string): any => {
-            let tags = indexObj.tags.filter(v => v.name.indexOf(substr) > -1).map(v => v.id);
-            return (v: Article): boolean => {
-                for (let item of v.tag) {
-                    if (tags.includes(item)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
-    },
+    }
 ];
 
 const handle = (argv: yargs.Arguments<any>, indexObj: Index): void => {
-    let result = indexObj.articles;
+    let result: Article[] = indexObj.articles;
     conditionList.filter(v => argv[v.type]).forEach(v => {
         result = result.filter(v.getHandle(indexObj, argv[v.type]));
+    });
+    output(result, indexObj);
+};
+
+const output = (articleList: Article[], indexObj: Index): void => {
+    common.info.success('the results of the query are shown below:');
+    articleList.forEach(v => {
+        let type = indexObj.types.find(t => t.id === v.type);
+        let tag = indexObj.tags.filter(t => v.tag.includes(t.id));
+        let status = common.data.statusList.find(t => t.id === v.status);
+        common.info.log(`
+            id: ${v.id}
+            name: ${v.name}
+            type: ${type?type.name:null}
+            tags: ${tag.map(t => t.name).join(';')}
+            path: ${v.path}
+            auther: ${v.auther}
+            create: ${moment(v.create).format('YYYY-MM-DD HH:mm:ss')}
+            update: ${moment(v.update).format('YYYY-MM-DD HH:mm:ss')}
+            status: ${status?status.name:''}
+        `);
     });
 };
 

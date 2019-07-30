@@ -128,14 +128,24 @@ const argv = yargs
             description: 'add substr of auther to search condition',
             type: 'string'
         },
-        earliestdate: {
-            alias: 'ed',
-            description: 'a date string which can be parsed by new Date(), as the earliest date of search condition',
+        earliestcreate: {
+            alias: 'ec',
+            description: 'a date string which can be parsed by new Date(), as the earliest create date of search condition',
             type: 'string'
         },
-        latestdate: {
-            alias: 'ld',
-            description: 'a date string which can be parsed by new Date(), as the latest date of search condition',
+        latestcreate: {
+            alias: 'lc',
+            description: 'a date string which can be parsed by new Date(), as the latest create date of search condition',
+            type: 'string'
+        },
+        earliestupdate: {
+            alias: 'eu',
+            description: 'a date string which can be parsed by new Date(), as the earliest update date of search condition',
+            type: 'string'
+        },
+        latestupdate: {
+            alias: 'lu',
+            description: 'a date string which can be parsed by new Date(), as the latest update date of search condition',
             type: 'string'
         },
         status: {
