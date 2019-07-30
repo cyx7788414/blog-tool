@@ -42,7 +42,8 @@ const handleConfig = (argv, indexObj, answer) => {
                         path: relativePath,
                         auther: argv.auther ? argv.auther : '',
                         create: date.getTime(),
-                        update: new Date().getTime()
+                        update: new Date().getTime(),
+                        status: answer.status
                     };
                     indexObj.articles.push(article);
                     common_1.default.fs.write({

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
+const rm = require("rimraf");
 const info_1 = require("./info");
 const _success = (type, params, data) => {
     info_1.default.success(`${type} ${params.path} success`);
@@ -94,11 +95,50 @@ const readDir = (params) => {
         });
     }
 };
+const rmDir = (params) => {
+    if (params.sync) {
+        _handleSync('rmDir', params, () => {
+            return fs.rmdirSync(params.path);
+        });
+    }
+    else {
+        fs.rmdir(params.path, err => {
+            _handleAsync('rmDir', params, err);
+        });
+    }
+};
+const rmDirRecur = (params) => {
+    if (params.sync) {
+        _handleSync('rmDirRecur', params, () => {
+            return rm.sync(params.path, {});
+        });
+    }
+    else {
+        rm(params.path, {}, err => {
+            _handleAsync('rmDirRecur', params, err);
+        });
+    }
+};
+const rmFile = (params) => {
+    if (params.sync) {
+        _handleSync('rmFile', params, () => {
+            return fs.unlinkSync(params.path);
+        });
+    }
+    else {
+        fs.unlink(params.path, err => {
+            _handleAsync('rmFile', params, err);
+        });
+    }
+};
 const fileOperation = {
     write: writeFile,
     mkdir: mkdir,
     read: readFile,
     stat: getStat,
-    readdir: readDir
+    readdir: readDir,
+    rmFile: rmFile,
+    rmDir: rmDir,
+    rmDirRecur: rmDirRecur
 };
 exports.default = fileOperation;

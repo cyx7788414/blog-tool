@@ -8,27 +8,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
 const common_1 = require("./common");
 const initForm = (indexObj, target) => __awaiter(this, void 0, void 0, function* () {
     let typeList = indexObj.types;
     let tagList = indexObj.tags;
+    let typeChoices = typeList.map(v => {
+        let obj = {
+            name: v.name,
+            value: v.id,
+            checked: (target && target.type === v.id) ? true : false
+        };
+        return obj;
+    }).concat([
+        { name: 'i will update it later', value: -1, checked: (target && target.type === null) ? true : false },
+        { name: 'add new one', value: -2, checked: false }
+    ]);
     let answer = yield common_1.default.inquirer.make([
         Object.assign({
             type: 'list',
             name: 'type',
             message: 'choice a type',
-            choices: typeList.map(v => {
-                let obj = {
-                    name: v.name,
-                    value: v.id,
-                    checked: target && target.type === v.id ? true : false
-                };
-                return obj;
-            }).concat([
-                { name: 'i will update it later', value: -1, checked: false },
-                { name: 'add new one', value: -2, checked: false }
-            ])
-        }, target ? { default: target.type } : {}),
+            choices: typeChoices
+        }, target ? { default: typeChoices.findIndex(v => v.value === target.type) || typeChoices.length - 1 } : {}),
         {
             type: 'input',
             name: 'newType',
@@ -54,6 +56,22 @@ const initForm = (indexObj, target) => __awaiter(this, void 0, void 0, function*
             name: 'newTag',
             message: 'input some new tag (split it with \';\'))',
             when: current => (current.tag.includes(-2) && !current.newTag)
+        },
+        {
+            type: 'list',
+            name: 'status',
+            message: 'choice the status of this article',
+            when: current => target ? true : false,
+            choices: common_1.default.data.statusList.map(v => {
+                return {
+                    name: v.name,
+                    value: v.id,
+                    checked: target && target.status === v.id
+                };
+            }),
+            default: () => {
+                return target ? target.status : 0;
+            }
         }
     ]);
     return answer;
@@ -104,7 +122,8 @@ const checkAnswer = (indexObj, answer) => {
         type: type,
         newType: newType,
         tag: tag,
-        newTag: newTag
+        newTag: newTag,
+        status: answer.status || 0
     };
 };
 const makeSure = (argv, answer, target) => __awaiter(this, void 0, void 0, function* () {
@@ -112,7 +131,8 @@ const makeSure = (argv, answer, target) => __awaiter(this, void 0, void 0, funct
         name: ${argv.name || (target ? target.name : '')}
         auther: ${argv.auther || (target ? target.auther : '')}
         type: ${answer.type ? answer.type.name : null}
-        tag: ${answer.tag.length > 0 ? answer.tag.map(v => v.name).join('; ') : null}
+        tag: ${answer.tag.length > 0 ? answer.tag.map(v => v.name).join('; ') : null},
+        status: ${common_1.default.data.statusList.find(v => v.id === (answer.status || 0)).name}
     `;
     return common_1.default.inquirer.make([
         {
@@ -122,9 +142,46 @@ const makeSure = (argv, answer, target) => __awaiter(this, void 0, void 0, funct
         }
     ]);
 });
+const editArticleItemPrepare = (argv, callback) => {
+    let absolutePath = path.resolve(argv.path);
+    let pathParam = path.parse(absolutePath);
+    let indexPath = path.join(absolutePath, '../../../../index.json');
+    if (common_1.default.tool.updatableCheck(absolutePath) && /\d+/.test(pathParam.base)) {
+        let id = parseInt(pathParam.base);
+        common_1.default.fs.read({
+            path: indexPath,
+            success: (data) => __awaiter(this, void 0, void 0, function* () {
+                let indexObj = JSON.parse(data.toString());
+                let target = indexObj.articles.find((v, i) => {
+                    return v.id === id;
+                });
+                if (!target) {
+                    common_1.default.info.warn(`id ${id} dose not exist in index.json`);
+                    return;
+                }
+                try {
+                    callback({
+                        indexObj: indexObj,
+                        target: target,
+                        indexPath: indexPath,
+                        absolutePath: absolutePath,
+                        pathParam: pathParam
+                    });
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            })
+        });
+    }
+    else {
+        common_1.default.info.warn(`path ${absolutePath} is not a article item path`);
+    }
+};
 const editOperation = {
     initForm: initForm,
     checkAnswer: checkAnswer,
-    makeSure: makeSure
+    makeSure: makeSure,
+    editArticleItemPrepare: editArticleItemPrepare
 };
 exports.default = editOperation;

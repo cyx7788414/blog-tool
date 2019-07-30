@@ -38,6 +38,24 @@ declare const common: {
             error?: Function;
             sync?: boolean;
         }) => void;
+        rmFile: (params: {
+            path: string;
+            success?: Function;
+            error?: Function;
+            sync?: boolean;
+        }) => void;
+        rmDir: (params: {
+            path: string;
+            success?: Function;
+            error?: Function;
+            sync?: boolean;
+        }) => void;
+        rmDirRecur: (params: {
+            path: string;
+            success?: Function;
+            error?: Function;
+            sync?: boolean;
+        }) => void;
     };
     info: {
         log: (str: string) => void;
@@ -46,11 +64,18 @@ declare const common: {
         success: (str: string) => void;
     };
     tool: {
+        attrMap: {
+            name: any;
+            value: any;
+            get: Function;
+        };
+        checkInvalidDate: (date: string) => boolean;
         isDirectory: (path: string) => boolean;
         isFile: (path: string) => boolean;
         initializableCheck: (path: string) => boolean;
         initializedCheck: (path: string) => boolean;
         updatableCheck: (path: string) => boolean;
+        writeIndex: (indexPath: string, indexObj: import("../class").default, success?: Function, error?: Function) => void;
     };
     inquirer: {
         make: (queryList: import("inquirer").Questions<Record<string, any>>) => Promise<any>;
@@ -61,6 +86,10 @@ declare const common: {
         makeSure: (argv: any, answer: import("../class/cleananswer").default, target?: import("../class/article").default) => Promise<{
             makesure: boolean;
         }>;
+        editArticleItemPrepare: (argv: any, callback: Function) => void;
+    };
+    data: {
+        statusList: any[];
     };
 };
 export default common;

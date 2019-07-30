@@ -5,4 +5,5 @@ export default class CleanAnswer {
     newType: Type;
     tag: Tag[];
     newTag: Tag[];
+    status: number;
 }

@@ -38,5 +38,23 @@ declare const fileOperation: {
         error?: Function;
         sync?: boolean;
     }) => void;
+    rmFile: (params: {
+        path: string;
+        success?: Function;
+        error?: Function;
+        sync?: boolean;
+    }) => void;
+    rmDir: (params: {
+        path: string;
+        success?: Function;
+        error?: Function;
+        sync?: boolean;
+    }) => void;
+    rmDirRecur: (params: {
+        path: string;
+        success?: Function;
+        error?: Function;
+        sync?: boolean;
+    }) => void;
 };
 export default fileOperation;

@@ -8,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const path = require("path");
 const common_1 = require("../common/common");
 const handleConfig = (argv, indexObj, answer, target, indexPath) => {
     if (answer.newType) {
@@ -29,12 +28,13 @@ const handleConfig = (argv, indexObj, answer, target, indexPath) => {
         target.type = answer.type ? answer.type.id : null;
         target.tag = answer.tag.map(v => v.id);
         target.update = new Date().getTime();
+        target.status = answer.status;
         indexObj.articles[index] = target;
         common_1.default.fs.write({
             path: indexPath,
             str: JSON.stringify(indexObj),
             success: () => {
-                common_1.default.info.success(`done!\nthe article ${argv.name} has be update to index.json`);
+                common_1.default.info.success(`done!\nthe article ${target.name} has be update to index.json`);
             }
         });
     }
@@ -43,29 +43,13 @@ const handleConfig = (argv, indexObj, answer, target, indexPath) => {
     }
 };
 const update = (argv) => {
-    let absolutePath = path.resolve(argv.path);
-    let pathParam = path.parse(absolutePath);
-    let indexPath = path.join(absolutePath, '../../../../index.json');
-    if (common_1.default.tool.updatableCheck(absolutePath) && /\d+/.test(pathParam.base)) {
-        let id = parseInt(pathParam.base);
-        common_1.default.fs.read({
-            path: indexPath,
-            success: (data) => __awaiter(this, void 0, void 0, function* () {
-                let indexObj = JSON.parse(data.toString());
-                let target = indexObj.articles.find((v, i) => {
-                    return v.id === id;
-                });
-                let formAnswer = yield common_1.default.edit.initForm(indexObj, target);
-                let cleanAnswer = common_1.default.edit.checkAnswer(indexObj, formAnswer);
-                let confirmAnswer = yield common_1.default.edit.makeSure(argv, cleanAnswer, target);
-                if (confirmAnswer.makesure) {
-                    handleConfig(argv, indexObj, cleanAnswer, target, indexPath);
-                }
-            })
-        });
-    }
-    else {
-        common_1.default.info.warn(`path ${absolutePath} is not a article item path`);
-    }
+    common_1.default.edit.editArticleItemPrepare(argv, (params) => __awaiter(this, void 0, void 0, function* () {
+        let formAnswer = yield common_1.default.edit.initForm(params.indexObj, params.target);
+        let cleanAnswer = common_1.default.edit.checkAnswer(params.indexObj, formAnswer);
+        let confirmAnswer = yield common_1.default.edit.makeSure(argv, cleanAnswer, params.target);
+        if (confirmAnswer.makesure) {
+            handleConfig(argv, params.indexObj, cleanAnswer, params.target, params.indexPath);
+        }
+    }));
 };
 exports.default = update;

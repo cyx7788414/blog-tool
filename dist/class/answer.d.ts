@@ -3,4 +3,5 @@ export default class Answer {
     newType?: string;
     tag: number[];
     newTag?: string;
+    status?: number;
 }
