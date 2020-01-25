@@ -1,6 +1,6 @@
 import * as inquirer from 'inquirer';
 
-const makeQuestion = async (queryList: inquirer.Questions): Promise<any> => {
+const makeQuestion = async (queryList: inquirer.QuestionCollection): Promise<any> => {
     return inquirer.prompt(queryList);
 };
 

@@ -78,7 +78,7 @@ declare const common: {
         writeIndex: (indexPath: string, indexObj: import("../class").default, success?: Function, error?: Function) => void;
     };
     inquirer: {
-        make: (queryList: import("inquirer").Questions<Record<string, any>>) => Promise<any>;
+        make: (queryList: import("inquirer").QuestionCollection<import("inquirer").Answers>) => Promise<any>;
     };
     edit: {
         initForm: (indexObj: import("../class").default, target?: import("../class/article").default) => Promise<import("../class/answer").default>;

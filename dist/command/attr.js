@@ -1,16 +1,17 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("../common/common");
 const path = require("path");
-const enquire = (argv, indexObj, indexPath) => __awaiter(this, void 0, void 0, function* () {
+const enquire = (argv, indexObj, indexPath) => __awaiter(void 0, void 0, void 0, function* () {
     let answer = yield common_1.default.inquirer.make([
         {
             type: 'list',
@@ -45,7 +46,7 @@ const enquire = (argv, indexObj, indexPath) => __awaiter(this, void 0, void 0, f
                 type: 'input',
                 name: 'name',
                 message: 'please input the new name',
-                validate: val => {
+                validate: (val) => {
                     if (val) {
                         return true;
                     }
@@ -55,7 +56,7 @@ const enquire = (argv, indexObj, indexPath) => __awaiter(this, void 0, void 0, f
             {
                 type: 'confirm',
                 name: 'makesure',
-                message: answer => {
+                message: (answer) => {
                     return `you will change ${answer.target.name} to ${answer.name}, are u sure?`;
                 }
             }
@@ -85,7 +86,7 @@ const enquire = (argv, indexObj, indexPath) => __awaiter(this, void 0, void 0, f
             {
                 type: 'confirm',
                 name: 'makesure',
-                message: answer => {
+                message: (answer) => {
                     return `you will delete targets below, are u sure?\n${answer.target.map((v) => v.name).join('\n')}`;
                 }
             }

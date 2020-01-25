@@ -38,7 +38,7 @@ const enquire = async (argv: yargs.Arguments<any>, indexObj: Index, indexPath: s
                 type: 'input',
                 name: 'name',
                 message: 'please input the new name',
-                validate: val => {
+                validate: (val: any) => {
                     if (val) {
                         return true;
                     }
@@ -48,7 +48,7 @@ const enquire = async (argv: yargs.Arguments<any>, indexObj: Index, indexPath: s
             {
                 type: 'confirm',
                 name: 'makesure',
-                message: answer => {
+                message: (answer: any) => {
                     return `you will change ${answer.target.name} to ${answer.name}, are u sure?`;
                 }
             }
@@ -77,7 +77,7 @@ const enquire = async (argv: yargs.Arguments<any>, indexObj: Index, indexPath: s
             {
                 type: 'confirm',
                 name: 'makesure',
-                message: answer => {
+                message: (answer: any) => {
                     return `you will delete targets below, are u sure?\n${answer.target.map((v: any) => v.name).join('\n')}`;
                 }
             }

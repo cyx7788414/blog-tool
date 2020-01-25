@@ -14,7 +14,7 @@ const argv = yargs
     .command('init', 'init base path', {
     path: {
         alias: 'p',
-        description: 'bath path',
+        description: 'base path',
         default: './',
         type: 'string'
     }
@@ -22,7 +22,7 @@ const argv = yargs
     .command('add', 'add new article', {
     path: {
         alias: 'p',
-        description: 'initialized bath path',
+        description: 'initialized base path',
         default: './',
         type: 'string'
     },
@@ -101,7 +101,7 @@ const argv = yargs
         type: 'boolean'
     }
 }, attr_1.default)
-    .command('search', 'search article width tag/type/name/auther/date', {
+    .command('search', 'search article with tag/type/name/auther/date', {
     path: {
         alias: 'p',
         description: 'a base path (which have a index.json)',

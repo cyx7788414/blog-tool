@@ -33,7 +33,7 @@ const initForm = async (indexObj: Index, target?: Article): Promise<Answer> => {
             type: 'input',
             name: 'newType',
             message: 'input a new type',
-            when: current => (current.type === -2 && !current.newType)
+            when: (current: any) => (current.type === -2 && !current.newType)
         },
         {
             type: 'checkbox',
@@ -53,13 +53,13 @@ const initForm = async (indexObj: Index, target?: Article): Promise<Answer> => {
             type: 'input',
             name: 'newTag',
             message: 'input some new tag (split it with \';\'))',
-            when: current => (current.tag.includes(-2) && !current.newTag)
+            when: (current: any) => (current.tag.includes(-2) && !current.newTag)
         },
         {
             type: 'list',
             name: 'status',
             message: 'choice the status of this article',
-            when: current => target?true:false,
+            when: (current: any) => target?true:false,
             choices: common.data.statusList.map(v => {
                 return {
                     name: v.name,

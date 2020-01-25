@@ -1,16 +1,17 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const common_1 = require("./common");
-const initForm = (indexObj, target) => __awaiter(this, void 0, void 0, function* () {
+const initForm = (indexObj, target) => __awaiter(void 0, void 0, void 0, function* () {
     let typeList = indexObj.types;
     let tagList = indexObj.tags;
     let typeChoices = typeList.map(v => {
@@ -35,7 +36,7 @@ const initForm = (indexObj, target) => __awaiter(this, void 0, void 0, function*
             type: 'input',
             name: 'newType',
             message: 'input a new type',
-            when: current => (current.type === -2 && !current.newType)
+            when: (current) => (current.type === -2 && !current.newType)
         },
         {
             type: 'checkbox',
@@ -55,13 +56,13 @@ const initForm = (indexObj, target) => __awaiter(this, void 0, void 0, function*
             type: 'input',
             name: 'newTag',
             message: 'input some new tag (split it with \';\'))',
-            when: current => (current.tag.includes(-2) && !current.newTag)
+            when: (current) => (current.tag.includes(-2) && !current.newTag)
         },
         {
             type: 'list',
             name: 'status',
             message: 'choice the status of this article',
-            when: current => target ? true : false,
+            when: (current) => target ? true : false,
             choices: common_1.default.data.statusList.map(v => {
                 return {
                     name: v.name,
@@ -126,7 +127,7 @@ const checkAnswer = (indexObj, answer) => {
         status: answer.status || 0
     };
 };
-const makeSure = (argv, answer, target) => __awaiter(this, void 0, void 0, function* () {
+const makeSure = (argv, answer, target) => __awaiter(void 0, void 0, void 0, function* () {
     let message = `please confirm article info:
         name: ${argv.name || (target ? target.name : '')}
         auther: ${argv.auther || (target ? target.auther : '')}
@@ -150,7 +151,7 @@ const editArticleItemPrepare = (argv, callback) => {
         let id = parseInt(pathParam.base);
         common_1.default.fs.read({
             path: indexPath,
-            success: (data) => __awaiter(this, void 0, void 0, function* () {
+            success: (data) => __awaiter(void 0, void 0, void 0, function* () {
                 let indexObj = JSON.parse(data.toString());
                 let target = indexObj.articles.find((v, i) => {
                     return v.id === id;

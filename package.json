@@ -1,6 +1,6 @@
 {
   "name": "blog-tool",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "help to write blog with markdown & generate data like index/classification",
   "bin": "bin/blog-tool.js",
   "main": "dist/index.js",
